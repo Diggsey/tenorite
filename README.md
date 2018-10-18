@@ -9,47 +9,47 @@ Fast logic simulation Rust library
 - Extensible (component trait is easy to implement)
 - Allocation free (whilst simulating)
 - Prebuild components
-  - Gates
-    - Constant
-    - Buffer
-    - Not gate
-    - And gate
-    - Or gate
-    - Xor gate
-    - Nand gate
-    - Nor gate
-    - Xnor gate
-    - Imply gate
-    - Controlled buffer
-    - Controlled inverter
-    - N-ary and gate
-    - N-ary or gate
-    - Parity gate (N-ary xor gate)
-  - Latches
-    - SR-Nor latch
-  - Memory
-    - *TODO: Flip-flops*
-    - *TODO: Registers*
-    - *TODO: Counter*
-    - *TODO: RAM*
-    - *TODO: ROM*
-  - Clocks
-    - Clock
-    - Controlled clock
-  - Plexers
-    - Multiplexer
-    - Demultiplexer
-    - Priority encoder
-  - Arithmetic
-    - Half adder
-    - Full adder
-    - Bit adder
-    - Adder
-    - Subtractor
-    - Multiplier
-    - Negator
-    - Comparator
-    - Shifter
+    - Gates
+        - Constant
+        - Buffer
+        - Not gate
+        - And gate
+        - Or gate
+        - Xor gate
+        - Nand gate
+        - Nor gate
+        - Xnor gate
+        - Imply gate
+        - Controlled buffer
+        - Controlled inverter
+        - N-ary and gate
+        - N-ary or gate
+        - Parity gate (N-ary xor gate)
+    - Latches
+        - SR-Nor latch
+    - Memory
+        - *TODO: Flip-flops*
+        - *TODO: Registers*
+        - *TODO: Counter*
+        - *TODO: RAM*
+        - *TODO: ROM*
+    - Clocks
+        - Clock
+        - Controlled clock
+    - Plexers
+        - Multiplexer
+        - Demultiplexer
+        - Priority encoder
+    - Arithmetic
+        - Half adder
+        - Full adder
+        - Bit adder
+        - Adder
+        - Subtractor
+        - Multiplier
+        - Negator
+        - Comparator
+        - Shifter
 
 ## Out of scope
 - Precise signal timing (wires have no delay, components cannot have custom delays)
@@ -69,12 +69,12 @@ let or_result = builder.add_wire();
 let and_result = builder.add_wire();
 
 // Add high and low voltage sources for our power and ground lines
-builder.add_component(Box::new(gates::Constant::new(Voltage::High.into())), &[], &[power]);
-builder.add_component(Box::new(gates::Constant::new(Voltage::Low.into())), &[], &[ground]);
+builder.add_component(Constant::new(Voltage::High.into()), &[], &[power]);
+builder.add_component(Constant::new(Voltage::Low.into()), &[], &[ground]);
 
 // Use the high and low voltages as inputs to our AND and OR gates
-builder.add_component(Box::new(gates::OrGate::default()), &[power, ground], &[or_result]);
-builder.add_component(Box::new(gates::AndGate::default()), &[power, ground], &[and_result]);
+builder.add_component(OrGate::default(), &[power, ground], &[or_result]);
+builder.add_component(AndGate::default(), &[power, ground], &[and_result]);
 
 // Build the circuit
 let mut circuit = builder.build();
