@@ -130,6 +130,12 @@ impl<'a> ComponentInterface<'a> {
             }
         }
     }
+    pub fn num_inputs(&self) -> usize {
+        self.inputs.len()
+    }
+    pub fn num_outputs(&self) -> usize {
+        self.outputs.len()
+    }
 }
 
 #[derive(Debug)]

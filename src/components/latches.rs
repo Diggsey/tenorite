@@ -8,6 +8,12 @@ pub struct SrNorLatch {
     r: bool,
 }
 
+impl SrNorLatch {
+    pub fn new() -> Self {
+        Default::default()
+    }
+}
+
 impl Component for SrNorLatch {
     fn update(&mut self, interface: &mut ComponentInterface) {
         let s = interface.input(0);

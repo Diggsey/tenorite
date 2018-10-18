@@ -17,11 +17,12 @@ impl Constant {
             changed: false,
         }
     }
-    pub fn set(&mut self, value: VoltageInput) {
+    pub fn set(&mut self, value: VoltageInput) -> &mut Self {
         if value != self.value {
             self.value = value;
             self.changed = true;
         }
+        self
     }
     pub fn get(&self) -> VoltageInput {
         self.value
@@ -45,6 +46,12 @@ pub trait UnaryGateFn: 'static + fmt::Debug {
 
 #[derive(Debug)]
 pub struct UnaryGate<F: UnaryGateFn>(PhantomData<&'static F>);
+
+impl<F: UnaryGateFn> UnaryGate<F> {
+    pub fn new() -> Self {
+        Default::default()
+    }
+}
 
 impl<F: UnaryGateFn> Component for UnaryGate<F> {
     fn update(&mut self, interface: &mut ComponentInterface) {
@@ -96,6 +103,12 @@ pub trait BinaryGateFn: 'static + fmt::Debug {
 
 #[derive(Debug)]
 pub struct BinaryGate<F: BinaryGateFn>(PhantomData<&'static F>);
+
+impl<F: BinaryGateFn> BinaryGate<F> {
+    pub fn new() -> Self {
+        Default::default()
+    }
+}
 
 impl<F: BinaryGateFn> Component for BinaryGate<F> {
     fn update(&mut self, interface: &mut ComponentInterface) {
@@ -252,3 +265,40 @@ impl BinaryGateFn for InvertedControlFn {
     }
 }
 pub type ControlledInverter = BinaryGate<InvertedControlFn>;
+
+
+// N-ary gates
+#[derive(Debug)]
+pub struct NaryGate<F: BinaryGateFn>(PhantomData<&'static F>);
+
+impl<F: BinaryGateFn> NaryGate<F> {
+    pub fn new() -> Self {
+        Default::default()
+    }
+}
+
+impl<F: BinaryGateFn> Component for NaryGate<F> {
+    fn update(&mut self, interface: &mut ComponentInterface) {
+        let mut result = F::call(interface.input(0), interface.input(1));
+        for i in 2..interface.num_inputs() {
+            result = F::call(result.voltage, interface.input(i));
+        }
+        interface.output(0, result);
+    }
+}
+
+impl<F: BinaryGateFn> Default for NaryGate<F> {
+    fn default() -> Self {
+        NaryGate(PhantomData)
+    }
+}
+
+impl<F: BinaryGateFn> Clone for NaryGate<F> {
+    fn clone(&self) -> Self {
+        NaryGate(PhantomData)
+    }
+}
+
+pub type NaryAndGate = NaryGate<AndFn>;
+pub type NaryOrGate = NaryGate<OrFn>;
+pub type ParityGate = NaryGate<XorFn>;

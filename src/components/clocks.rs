@@ -10,12 +10,17 @@ pub struct Clock {
 }
 
 impl Clock {
-    pub fn set_ticks(&mut self, low: u32, high: u32) {
+    pub fn new() -> Self {
+        Default::default()
+    }
+    pub fn set_ticks(&mut self, low: u32, high: u32) -> &mut Self {
         self.ticks_low = low;
         self.ticks_high = high;
+        self
     }
-    pub fn set_phase(&mut self, phase: u32) {
+    pub fn set_phase(&mut self, phase: u32) -> &mut Self {
         self.tick_phase = phase;
+        self
     }
     pub fn ticks_low(&self) -> u32 { self.ticks_low }
     pub fn ticks_high(&self) -> u32 { self.ticks_high }
@@ -35,6 +40,17 @@ impl Component for Clock {
     }
 }
 
+impl Default for Clock {
+    fn default() -> Self {
+        Self {
+            ticks_low: 1,
+            ticks_high: 1,
+            tick_phase: 0,
+            state: false,
+        }
+    }
+}
+
 #[derive(Debug, Clone)]
 pub struct ControlledClock {
     ticks_low: u32,
@@ -45,12 +61,17 @@ pub struct ControlledClock {
 }
 
 impl ControlledClock {
-    pub fn set_ticks(&mut self, low: u32, high: u32) {
+    pub fn new() -> Self {
+        Default::default()
+    }
+    pub fn set_ticks(&mut self, low: u32, high: u32) -> &mut Self {
         self.ticks_low = low;
         self.ticks_high = high;
+        self
     }
-    pub fn set_phase(&mut self, phase: u32) {
+    pub fn set_phase(&mut self, phase: u32) -> &mut Self {
         self.tick_phase = phase;
+        self
     }
     pub fn ticks_low(&self) -> u32 { self.ticks_low }
     pub fn ticks_high(&self) -> u32 { self.ticks_high }
@@ -78,5 +99,17 @@ impl Component for ControlledClock {
     fn update(&mut self, interface: &mut ComponentInterface) {
         self.enabled = interface.input(0);
         interface.output(0, self.state.into());
+    }
+}
+
+impl Default for ControlledClock {
+    fn default() -> Self {
+        Self {
+            ticks_low: 1,
+            ticks_high: 1,
+            tick_phase: 0,
+            state: Voltage::Low,
+            enabled: Voltage::High,
+        }
     }
 }
