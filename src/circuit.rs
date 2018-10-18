@@ -386,7 +386,7 @@ impl CircuitBuilder {
         self.wires.push(PreparedWire::default());
         result
     }
-    pub fn add_component(&mut self, component: Box<AnyComponent>, inputs: &[WireRef], outputs: &[WireRef]) -> ComponentRef {
+    pub fn add_boxed_component(&mut self, component: Box<AnyComponent>, inputs: &[WireRef], outputs: &[WireRef]) -> ComponentRef {
         let result = ComponentRef(self.components.len());
 
         let mut comp = PreparedComponent {
@@ -413,6 +413,9 @@ impl CircuitBuilder {
 
         self.components.push(comp);
         result
+    }
+    pub fn add_component<T: AnyComponent>(&mut self, component: T, inputs: &[WireRef], outputs: &[WireRef]) -> ComponentRef {
+        self.add_boxed_component(Box::new(component), inputs, outputs)
     }
     pub fn build(self) -> Circuit {
         let mut component_sets_map = HashMap::new();
