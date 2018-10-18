@@ -3,7 +3,7 @@ Fast logic simulation Rust library
 
 ## Features
 - Four input pin states (high, low, floating, error)
-- Six output pin states (high, low, pull-up, pull-down, floating, error)
+- Seven output pin states (high, low, pull-up, pull-down, floating, error, pull-error)
 - Rough approximation of signal delay (all components have equal delays, wires have no delay)
 - Fast (only updates what's changed)
 - Extensible (component trait is easy to implement)
