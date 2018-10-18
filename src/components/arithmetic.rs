@@ -353,3 +353,42 @@ impl Component for Comparator {
         }
     }
 }
+
+#[derive(Debug, Clone)]
+pub struct Shifter {
+    select_bits: usize,
+}
+
+impl Shifter {
+    pub fn new(select_bits: usize) -> Self {
+        Self { select_bits }
+    }
+}
+
+impl Component for Shifter {
+    fn update(&mut self, interface: &mut ComponentInterface) {
+        let select_bits = self.select_bits as usize;
+        let mut index = 0;
+        for i in 0..select_bits {
+            match interface.input(i) {
+                Voltage::Low => {},
+                Voltage::High => {
+                    index |= 1 << i;
+                },
+                _ => {
+                    for j in 0..(1 << select_bits) {
+                        interface.output(j, Voltage::Error.into());
+                    }
+                    return;
+                }
+            }
+        }
+        for j in 0..(1 << select_bits) {
+            if j >= index {
+                interface.output(j, interface.input(j - index).into());
+            } else {
+                interface.output(j, Voltage::Low.into());
+            }
+        }
+    }
+}
