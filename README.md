@@ -8,7 +8,7 @@ Fast logic simulation Rust library
 - Fast (only updates what's changed)
 - Extensible (component trait is easy to implement)
 - Allocation free (whilst simulating)
-- Prebuild components
+- Pre-built components
     - Gates
         - Constant
         - Buffer
