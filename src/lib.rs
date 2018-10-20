@@ -1,6 +1,9 @@
 mod circuit;
 mod components;
 
+#[cfg(test)]
+mod test_utils;
+
 pub use self::circuit::*;
 pub use self::components::*;
 

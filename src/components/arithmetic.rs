@@ -392,3 +392,223 @@ impl Component for Shifter {
         }
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::test_utils::*;
+
+    #[test]
+    fn bit_adder() {
+        // Simple
+        assert_eq!(simulate_component(
+            BitAdder::new(),
+            &[(1, 1, 0), (1, 1, 0), (1, 0, 0), (1, 1, 0), (1, 0, 0), (1, 0, 0)],
+            &[3]
+        ), [(3, 0)]);
+
+        // Overflow
+        assert_eq!(simulate_component(
+            BitAdder::new(),
+            &[(1, 1, 0), (1, 1, 0), (1, 1, 0), (1, 1, 0), (1, 1, 0), (1, 1, 0)],
+            &[2]
+        ), [(2, 0)]);
+
+        // Floating
+        assert_eq!(simulate_component(
+            BitAdder::new(),
+            &[(1, 1, 0), (1, 1, 0), (1, 0, 0), (1, 1, 0), (1, 0, 0), (1, 0, 1)],
+            &[3]
+        ), [(7, 7)]);
+
+        // Empty
+        assert_eq!(simulate_component(
+            BitAdder::new(),
+            &[],
+            &[3]
+        ), [(0, 0)]);
+
+        // Maximum
+        assert_eq!(simulate_component(
+            BitAdder::new(),
+            &[(1, 1, 0), (1, 1, 0), (1, 1, 0), (1, 1, 0), (1, 1, 0), (1, 1, 0), (1, 1, 0)],
+            &[3]
+        ), [(7, 0)]);
+    }
+
+    #[test]
+    fn half_adder() {
+        // 0, 0
+        assert_eq!(simulate_component(
+            HalfAdder::new(),
+            &[(1, 0, 0), (1, 0, 0)],
+            &[1, 1]
+        ), [(0, 0), (0, 0)]);
+        // 0, 1
+        assert_eq!(simulate_component(
+            HalfAdder::new(),
+            &[(1, 0, 0), (1, 1, 0)],
+            &[1, 1]
+        ), [(1, 0), (0, 0)]);
+        // 1, 0
+        assert_eq!(simulate_component(
+            HalfAdder::new(),
+            &[(1, 1, 0), (1, 0, 0)],
+            &[1, 1]
+        ), [(1, 0), (0, 0)]);
+        // 1, 1
+        assert_eq!(simulate_component(
+            HalfAdder::new(),
+            &[(1, 1, 0), (1, 1, 0)],
+            &[1, 1]
+        ), [(0, 0), (1, 0)]);
+        // 0, F
+        assert_eq!(simulate_component(
+            HalfAdder::new(),
+            &[(1, 0, 0), (1, 0, 1)],
+            &[1, 1]
+        ), [(1, 1), (0, 0)]);
+        // 0, E
+        assert_eq!(simulate_component(
+            HalfAdder::new(),
+            &[(1, 0, 0), (1, 1, 1)],
+            &[1, 1]
+        ), [(1, 1), (0, 0)]);
+        // 1, F
+        assert_eq!(simulate_component(
+            HalfAdder::new(),
+            &[(1, 1, 0), (1, 0, 1)],
+            &[1, 1]
+        ), [(1, 1), (1, 1)]);
+        // 1, E
+        assert_eq!(simulate_component(
+            HalfAdder::new(),
+            &[(1, 1, 0), (1, 1, 1)],
+            &[1, 1]
+        ), [(1, 1), (1, 1)]);
+    }
+
+    #[test]
+    fn full_adder() {
+        // 0, 0, 0
+        assert_eq!(simulate_component(
+            FullAdder::new(),
+            &[(1, 0, 0), (1, 0, 0), (1, 0, 0)],
+            &[2]
+        ), [(0, 0)]);
+        // 0, 0, 1
+        assert_eq!(simulate_component(
+            FullAdder::new(),
+            &[(1, 0, 0), (1, 0, 0), (1, 1, 0)],
+            &[2]
+        ), [(1, 0)]);
+        // 0, 1, 0
+        assert_eq!(simulate_component(
+            FullAdder::new(),
+            &[(1, 0, 0), (1, 1, 0), (1, 0, 0)],
+            &[2]
+        ), [(1, 0)]);
+        // 1, 0, 0
+        assert_eq!(simulate_component(
+            FullAdder::new(),
+            &[(1, 1, 0), (1, 0, 0), (1, 0, 0)],
+            &[2]
+        ), [(1, 0)]);
+        // 0, 0, F
+        assert_eq!(simulate_component(
+            FullAdder::new(),
+            &[(1, 0, 0), (1, 0, 0), (1, 0, 1)],
+            &[2]
+        ), [(1, 1)]);
+        // 0, F, 0
+        assert_eq!(simulate_component(
+            FullAdder::new(),
+            &[(1, 0, 0), (1, 0, 1), (1, 0, 0)],
+            &[2]
+        ), [(1, 1)]);
+        // F, 0, 0
+        assert_eq!(simulate_component(
+            FullAdder::new(),
+            &[(1, 0, 1), (1, 0, 0), (1, 0, 0)],
+            &[2]
+        ), [(1, 1)]);
+        // 0, 1, 1
+        assert_eq!(simulate_component(
+            FullAdder::new(),
+            &[(1, 0, 0), (1, 1, 0), (1, 1, 0)],
+            &[2]
+        ), [(2, 0)]);
+        // 1, 0, 1
+        assert_eq!(simulate_component(
+            FullAdder::new(),
+            &[(1, 1, 0), (1, 0, 0), (1, 1, 0)],
+            &[2]
+        ), [(2, 0)]);
+        // 1, 1, 0
+        assert_eq!(simulate_component(
+            FullAdder::new(),
+            &[(1, 1, 0), (1, 1, 0), (1, 0, 0)],
+            &[2]
+        ), [(2, 0)]);
+        // 0, 1, F
+        assert_eq!(simulate_component(
+            FullAdder::new(),
+            &[(1, 0, 0), (1, 1, 0), (1, 0, 1)],
+            &[2]
+        ), [(3, 3)]);
+        // 1, 1, 1
+        assert_eq!(simulate_component(
+            FullAdder::new(),
+            &[(1, 1, 0), (1, 1, 0), (1, 1, 0)],
+            &[2]
+        ), [(3, 0)]);
+    }
+
+    #[test]
+    fn adder() {
+        let bit_variations = &[1, 8, 10, 32];
+        for &a in INTERESTING_VALUES {
+            for &b in INTERESTING_VALUES {
+                for &bits in bit_variations {
+                    for carry in 0..1 {
+                        let mask = (1u64 << bits) - 1;
+                        assert_eq!(
+                            simulate_component(
+                                Adder::new(),
+                                &[(bits, a, 0), (bits, b, 0), (1, carry, 0)],
+                                &[bits+1]
+                            ),
+                            [((a&mask) + (b&mask) + carry, 0)],
+                            "bits: {}, a: {}, b: {}, carry: {}",
+                            bits, a, b, carry
+                        );
+                    }
+                }
+            }
+        }
+    }
+
+    #[test]
+    fn subtractor() {
+        let bit_variations = &[1, 8, 10, 32];
+        for &a in INTERESTING_VALUES {
+            for &b in INTERESTING_VALUES {
+                for &bits in bit_variations {
+                    for carry in 0..1 {
+                        let mask = (1u64 << bits) - 1;
+                        assert_eq!(
+                            simulate_component(
+                                Subtractor::new(),
+                                &[(bits, a, 0), (bits, b, 0), (1, carry, 0)],
+                                &[bits+1]
+                            ),
+                            [((a&mask).wrapping_sub(b&mask).wrapping_sub(carry) & ((mask << 1) + 1), 0)],
+                            "bits: {}, a: {}, b: {}, carry: {}",
+                            bits, a, b, carry
+                        );
+                    }
+                }
+            }
+        }
+    }
+}
